@@ -8,9 +8,9 @@
 #include "Type.h"
 #include "utils/quat_ops.h"
 
-namespace calib_type {
-
-    /**
+namespace calib_type
+{
+/**
      * @brief Derived Type class that implements JPL quaternion
      *
      * This quaternion uses a left-multiplicative error state and follows the "JPL convention".
@@ -19,21 +19,22 @@ namespace calib_type {
      * - http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf
      * - ftp://naif.jpl.nasa.gov/pub/naif/misc/Quaternion_White_Paper/Quaternions_White_Paper.pdf
      */
-    class Quat : public Type {
+class Quat : public Type
+{
+public:
+  Quat()
+  : Type(3)
+  {
+    Eigen::Matrix<double, 4, 1> q0;
+    q0.setZero();
+    q0(3) = 1.0;
+    set_value(q0);
+    set_fe(q0);
+  }
 
-    public:
+  ~Quat() {}
 
-        Quat() : Type(3) {
-            Eigen::Matrix<double, 4, 1> q0;
-            q0.setZero();
-            q0(3) = 1.0;
-            set_value(q0);
-            set_fe(q0);
-        }
-
-        ~Quat() {}
-
-        /**
+  /**
          * @brief Implements update operation by left-multiplying the current
          * quaternion with a quaternion built from a small axis-angle perturbation.
          *
@@ -43,76 +44,76 @@ namespace calib_type {
          *
          * @param dx Axis-angle representation of the perturbing quaternion
          */
-        void update(const Eigen::VectorXd dx) override {
+  void update(const Eigen::VectorXd dx) override
+  {
+    assert(dx.rows() == _size);
 
-            assert(dx.rows() == _size);
+    //Build perturbing quaternion
+    Eigen::Matrix<double, 4, 1> dq;
+    dq << .5 * dx, 1.0;
+    dq = calib_core::quatnorm(dq);
 
-            //Build perturbing quaternion
-            Eigen::Matrix<double, 4, 1> dq;
-            dq << .5 * dx, 1.0;
-            dq = calib_core::quatnorm(dq);
+    //Update estimate and recompute R
+    set_value(calib_core::quat_multiply(dq, _value));
+  }
 
-            //Update estimate and recompute R
-            set_value(calib_core::quat_multiply(dq, _value));
-
-        }
-
-        /**
+  /**
         * @brief Sets the value of the estimate and recomputes the internal rotation matrix
         * @param new_value New value for the quaternion estimate
         */
-        void set_value(const Eigen::MatrixXd new_value) override {
+  void set_value(const Eigen::MatrixXd new_value) override
+  {
+    assert(new_value.rows() == 4);
+    assert(new_value.cols() == 1);
 
-            assert(new_value.rows() == 4);
-            assert(new_value.cols() == 1);
+    _value = new_value;
 
-            _value = new_value;
+    //compute associated rotation
+    _R = calib_core::quat_2_Rot(new_value);
+  }
 
-            //compute associated rotation
-            _R = calib_core::quat_2_Rot(new_value);
-        }
+  Type * clone() override
+  {
+    Type * Clone = new Quat();
+    Clone->set_value(value());
+    Clone->set_fe(fe());
+    return Clone;
+  }
 
-        Type *clone() override {
-            Type *Clone = new Quat();
-            Clone->set_value(value());
-            Clone->set_fe(fe());
-            return Clone;
-        }
-
-        /**
+  /**
         * @brief Sets the fej value and recomputes the fej rotation matrix
         * @param new_value New value for the quaternion estimate
         */
-        void set_fe(const Eigen::MatrixXd new_value) override {
+  void set_fe(const Eigen::MatrixXd new_value) override
+  {
+    assert(new_value.rows() == 4);
+    assert(new_value.cols() == 1);
 
-            assert(new_value.rows() == 4);
-            assert(new_value.cols() == 1);
+    _fe = new_value;
 
-            _fe = new_value;
+    //compute associated rotation
+    _Rfe = calib_core::quat_2_Rot(new_value);
+  }
 
-            //compute associated rotation
-            _Rfe = calib_core::quat_2_Rot(new_value);
-        }
+  /// Rotation access
+  Eigen::Matrix<double, 3, 3> Rot() const
+  {
+    return _R;
+  }
 
-        /// Rotation access
-        Eigen::Matrix<double, 3, 3> Rot() const {
-            return _R;
-        }
+  /// FEJ Rotation access
+  Eigen::Matrix<double, 3, 3> Rot_fe() const
+  {
+    return _Rfe;
+  }
 
-        /// FEJ Rotation access
-        Eigen::Matrix<double, 3, 3> Rot_fe() const {
-            return _Rfe;
-        }
+protected:
+  // Stores the rotation
+  Eigen::Matrix<double, 3, 3> _R;
 
-    protected:
-
-        // Stores the rotation
-        Eigen::Matrix<double, 3, 3> _R;
-
-        // Stores the first-estimate rotation
-        Eigen::Matrix<double, 3, 3> _Rfe;
-
-    };
+  // Stores the first-estimate rotation
+  Eigen::Matrix<double, 3, 3> _Rfe;
 };
+};  // namespace calib_type
 
-#endif //CALIB_QUAT_H
+#endif  //CALIB_QUAT_H
