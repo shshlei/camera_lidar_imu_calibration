@@ -1,11 +1,9 @@
-//
 // Created by usl on 11/29/20.
-//
 
 #ifndef CALIB_RELATIVEPOSE_H
 #define CALIB_RELATIVEPOSE_H
 
-#include "types/Pose.h"
+#include "camera_lidar_imu_calibration/types/Pose.h"
 
 #include <Eigen/Eigen>
 

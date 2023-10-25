@@ -1,8 +1,6 @@
-//
 // Created by usl on 11/7/20.
-//
 
-#include "Propagator.h"
+#include "camera_lidar_imu_calibration/state/Propagator.h"
 
 using namespace calib_core;
 using namespace calib_estimator;
@@ -114,7 +112,7 @@ void Propagator::fast_state_propagate(State * state,  /// Pointer to state
     for (size_t i = 0; i < prop_data.size() - 1; i++) {
       /// Time elapsed over interval
       double dt = prop_data.at(i + 1).timestamp - prop_data.at(i).timestamp;
-      //assert(data_plus.timestamp>data_minus.timestamp);
+      // assert(data_plus.timestamp>data_minus.timestamp);
       /// Corrected imu measurements
       Eigen::Matrix<double, 3, 1> w_hat1 = prop_data.at(i).wm - state->_imu->bias_g();
       Eigen::Matrix<double, 3, 1> a_hat1 = prop_data.at(i).am - state->_imu->bias_a();
@@ -167,7 +165,7 @@ void Propagator::fast_state_propagate(Eigen::Matrix<double, 10, 1> state,
     for (size_t i = 0; i < prop_data.size() - 1; i++) {
       /// Time elapsed over interval
       double dt = prop_data.at(i + 1).timestamp - prop_data.at(i).timestamp;
-      //assert(data_plus.timestamp>data_minus.timestamp);
+      // assert(data_plus.timestamp>data_minus.timestamp);
       /// Corrected imu measurements
       Eigen::Matrix<double, 3, 1> w_hat1 = prop_data.at(i).wm - bg;
       Eigen::Matrix<double, 3, 1> a_hat1 = prop_data.at(i).am - ba;
@@ -310,7 +308,7 @@ void Propagator::predict_and_compute(State * state,  /// Pointer to state
 
   // Time elapsed over interval
   double dt = data_plus.timestamp - data_minus.timestamp;
-  //assert(data_plus.timestamp>data_minus.timestamp);
+  // assert(data_plus.timestamp>data_minus.timestamp);
 
   // Corrected imu measurements
   Eigen::Matrix<double, 3, 1> w_hat = data_minus.wm - state->_imu->bias_g();
@@ -348,21 +346,21 @@ void Propagator::predict_and_compute(State * state,  /// Pointer to state
 
     F.block(th_id, th_id, 3, 3) = dR;
     F.block(th_id, bg_id, 3, 3).noalias() = -dR * Jr_so3(-w_hat * dt) * dt;
-    //F.block(th_id, bg_id, 3, 3).noalias() = -dR * Jr_so3(-log_so3(dR)) * dt;
+    // F.block(th_id, bg_id, 3, 3).noalias() = -dR * Jr_so3(-log_so3(dR)) * dt;
     F.block(bg_id, bg_id, 3, 3).setIdentity();
     F.block(v_id, th_id, 3, 3).noalias() = -skew_x(new_v - v_fej + _gravity * dt) * Rfej.transpose();
-    //F.block(v_id, th_id, 3, 3).noalias() = -Rfej.transpose() * skew_x(Rfej*(new_v-v_fej+_gravity*dt));
+    // F.block(v_id, th_id, 3, 3).noalias() = -Rfej.transpose() * skew_x(Rfej*(new_v-v_fej+_gravity*dt));
     F.block(v_id, v_id, 3, 3).setIdentity();
     F.block(v_id, ba_id, 3, 3) = -Rfej.transpose() * dt;
     F.block(ba_id, ba_id, 3, 3).setIdentity();
     F.block(p_id, th_id, 3, 3).noalias() = -skew_x(new_p - p_fej - v_fej * dt + 0.5 * _gravity * dt * dt) * Rfej.transpose();
-    //F.block(p_id, th_id, 3, 3).noalias() = -0.5 * Rfej.transpose() * skew_x(2*Rfej*(new_p-p_fej-v_fej*dt+0.5*_gravity*dt*dt));
+    // F.block(p_id, th_id, 3, 3).noalias() = -0.5 * Rfej.transpose() * skew_x(2*Rfej*(new_p-p_fej-v_fej*dt+0.5*_gravity*dt*dt));
     F.block(p_id, v_id, 3, 3) = Eigen::Matrix<double, 3, 3>::Identity() * dt;
     F.block(p_id, ba_id, 3, 3) = -0.5 * Rfej.transpose() * dt * dt;
     F.block(p_id, p_id, 3, 3).setIdentity();
 
     G.block(th_id, 0, 3, 3) = -dR * Jr_so3(-w_hat * dt) * dt;
-    //G.block(th_id, 0, 3, 3) = -dR * Jr_so3(-log_so3(dR)) * dt;
+    // G.block(th_id, 0, 3, 3) = -dR * Jr_so3(-log_so3(dR)) * dt;
     G.block(v_id, 3, 3, 3) = -Rfej.transpose() * dt;
     G.block(p_id, 3, 3, 3) = -0.5 * Rfej.transpose() * dt * dt;
     G.block(bg_id, 6, 3, 3) = dt * Eigen::Matrix<double, 3, 3>::Identity();
@@ -407,7 +405,7 @@ void Propagator::predict_and_compute(State * state,  /// Pointer to state
   Qd = G * Qc * G.transpose();
   Qd = 0.5 * (Qd + Qd.transpose());
 
-  //Now replace imu estimate and fej with propagated values
+  // Now replace imu estimate and fej with propagated values
   Eigen::Matrix<double, 16, 1> imu_x = state->_imu->value();
   imu_x.block(0, 0, 4, 1) = new_q;
   imu_x.block(4, 0, 3, 1) = new_p;
@@ -494,7 +492,7 @@ void Propagator::predict_mean_rk4(State * state,  /// Pointer to state
   a_hat += 0.5 * a_jerk * dt;
 
   Eigen::Vector4d dq_1 = quatnorm(dq_0 + 0.5 * k1_q);
-  //Eigen::Vector3d p_1 = p_0+0.5*k1_p;
+  // Eigen::Vector3d p_1 = p_0+0.5*k1_p;
   Eigen::Vector3d v_1 = v_0 + 0.5 * k1_v;
 
   Eigen::Vector4d q1_dot = 0.5 * Omega(w_hat) * dq_1;
@@ -508,7 +506,7 @@ void Propagator::predict_mean_rk4(State * state,  /// Pointer to state
 
   /// k3 ================
   Eigen::Vector4d dq_2 = quatnorm(dq_0 + 0.5 * k2_q);
-  //Eigen::Vector3d p_2 = p_0+0.5*k2_p;
+  // Eigen::Vector3d p_2 = p_0+0.5*k2_p;
   Eigen::Vector3d v_2 = v_0 + 0.5 * k2_v;
 
   Eigen::Vector4d q2_dot = 0.5 * Omega(w_hat) * dq_2;
@@ -525,7 +523,7 @@ void Propagator::predict_mean_rk4(State * state,  /// Pointer to state
   a_hat += 0.5 * a_jerk * dt;
 
   Eigen::Vector4d dq_3 = quatnorm(dq_0 + k3_q);
-  //Eigen::Vector3d p_3 = p_0+k3_p;
+  // Eigen::Vector3d p_3 = p_0+k3_p;
   Eigen::Vector3d v_3 = v_0 + k3_v;
 
   Eigen::Vector4d q3_dot = 0.5 * Omega(w_hat) * dq_3;

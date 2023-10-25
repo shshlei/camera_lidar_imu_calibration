@@ -1,12 +1,10 @@
-//
 // Created by usl on 11/28/20.
-//
 
 #ifndef CALIB_CORE_INERTIALINITIALIZER_H
 #define CALIB_CORE_INERTIALINITIALIZER_H
 
-#include "utils/color.h"
-#include "utils/quat_ops.h"
+#include "camera_lidar_imu_calibration/utils/color.h"
+#include "camera_lidar_imu_calibration/utils/quat_ops.h"
 
 #include <Eigen/Eigen>
 

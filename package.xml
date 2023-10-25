@@ -1,53 +1,56 @@
 <?xml version="1.0"?>
-<package>
-    <!-- Package Information -->
-    <name>camera_imu_lidar_calibration</name>
-    <version>1.0.0</version>
-    <description>
-        Camera-Inertial-Lidar Calibration
-    </description>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>camera_lidar_imu_calibration</name>
+  <version>1.0.0</version>
+  <description>Camera-Lidar-Inertial Calibration</description>
+  <author email="subodh514@tamu.edu">Subodh Mishra</author>
+  <maintainer email="subodh514@tamu.edu">Subodh Mishra</maintainer>
+  <license>GNU General Public License v3.0</license>
 
-    <!-- Code Authors -->
-    <author email="subodh514@tamu.edu">Subodh Mishra</author>
-    <maintainer email="subodh514@tamu.edu">Subodh Mishra</maintainer>
+  <buildtool_depend>ament_cmake_auto</buildtool_depend>
+  <buildtool_depend>rosidl_default_generators</buildtool_depend>
 
-    <!-- Licensing -->
-    <license>GNU General Public License v3.0</license>
+  <build_depend>tf2</build_depend>
+  <build_depend>tf2_ros</build_depend>
+  <build_depend>rosbag2_cpp</build_depend>
 
-    <!-- Dependencies which this package needs to build itself. -->
-    <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>rclcpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>nav_msgs</build_depend>
+  <build_depend>ndt_omp</build_depend>
+  <build_depend>imu_packet</build_depend>
+  <build_depend>pcl_ros</build_depend>
+  <build_depend>pcl_conversions</build_depend>
+  <build_depend>cv_bridge</build_depend>
+  <build_depend>gtsam</build_depend>
 
-    <!-- Dependencies needed to compile this package. -->
-    <build_depend>cmake_modules</build_depend>
-    <build_depend>roscpp</build_depend>
-    <build_depend>rosbag</build_depend>
-    <build_depend>tf</build_depend>
-    <build_depend>std_msgs</build_depend>
-    <build_depend>geometry_msgs</build_depend>
-    <build_depend>sensor_msgs</build_depend>
-    <build_depend>nav_msgs</build_depend>
-    <build_depend>ndt_omp</build_depend>
-    <build_depend>tf</build_depend>
-    <build_depend>imuPacket</build_depend>
-    <build_depend>pcl_ros</build_depend>
-    <build_depend>pcl_conversions</build_depend>
-    <build_depend>cv_bridge</build_depend>
+  <exec_depend>tf2</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>rosbag2_cpp</exec_depend>
 
-    <!-- Dependencies needed after this package is compiled. -->
-    <run_depend>roscpp</run_depend>
-    <run_depend>rosbag</run_depend>
-    <run_depend>tf</run_depend>
-    <run_depend>std_msgs</run_depend>
-    <run_depend>geometry_msgs</run_depend>
-    <run_depend>sensor_msgs</run_depend>
-    <run_depend>nav_msgs</run_depend>
-    <run_depend>ndt_omp</run_depend>
-    <run_depend>tf</run_depend>
-    <run_depend>imuPacket</run_depend>
-    <run_depend>pcl_ros</run_depend>
-    <run_depend>pcl_conversions</run_depend>
-    <run_depend>cv_bridge</run_depend>
+  <exec_depend>rclcpp</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>nav_msgs</exec_depend>
+  <exec_depend>ndt_omp</exec_depend>
+  <exec_depend>imu_packet</exec_depend>
+  <exec_depend>pcl_ros</exec_depend>
+  <exec_depend>pcl_conversions</exec_depend>
+  <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>gtsam</exec_depend>
 
+  <exec_depend>rosidl_default_runtime</exec_depend>
 
+  <member_of_group>rosidl_interface_packages</member_of_group>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>
-

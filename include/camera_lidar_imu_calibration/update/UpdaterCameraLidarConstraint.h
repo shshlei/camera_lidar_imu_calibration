@@ -5,11 +5,11 @@
 #ifndef CAMERA_IMU_LIDAR_CALIBRATION_UPDATERCAMERALIDARCONSTRAINT_H
 #define CAMERA_IMU_LIDAR_CALIBRATION_UPDATERCAMERALIDARCONSTRAINT_H
 
-#include "UpdaterOptions.h"
-#include "state/State.h"
-#include "state/StateHelper.h"
-#include "utils/color.h"
-#include "utils/quat_ops.h"
+#include "camera_lidar_imu_calibration/update/UpdaterOptions.h"
+#include "camera_lidar_imu_calibration/state/State.h"
+#include "camera_lidar_imu_calibration/state/StateHelper.h"
+#include "camera_lidar_imu_calibration/utils/color.h"
+#include "camera_lidar_imu_calibration/utils/quat_ops.h"
 
 #include <Eigen/Eigen>
 #include <opencv2/core/eigen.hpp>

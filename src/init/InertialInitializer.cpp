@@ -1,8 +1,6 @@
-//
 // Created by usl on 11/28/20.
-//
 
-#include "InertialInitializer.h"
+#include "camera_lidar_imu_calibration/init/InertialInitializer.h"
 
 using namespace calib_core;
 

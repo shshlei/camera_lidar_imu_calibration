@@ -1,4 +1,4 @@
-#include "UpdaterLidarOdometry.h"
+#include "camera_lidar_imu_calibration/update/UpdaterLidarOdometry.h"
 
 using namespace calib_core;
 using namespace calib_estimator;
@@ -19,25 +19,25 @@ void UpdaterLidarOdometry::updateScan2Scan(State * current_state, relativePose l
   /// IMU pose at time stamp i
   Pose * imuPose_i = current_state->_clones_IMU.at(odom_ts_i);
   Eigen::Matrix<double, 3, 3> Ii_R_G = imuPose_i->Rot();  // Ii_R_G
-  Eigen::Matrix<double, 3, 1> G_p_Ii = imuPose_i->pos();  // p_Ii in G
+  // Eigen::Matrix<double, 3, 1> G_p_Ii = imuPose_i->pos();  // p_Ii in G
 
   /// IMU pose at time stamp j
   Pose * imuPose_j = current_state->_clones_IMU.at(odom_ts_j);
   Eigen::Matrix<double, 3, 3> Ij_R_G = imuPose_j->Rot();    // Ij_R_G
-  Eigen::Matrix<double, 3, 1> G_p_Ij = imuPose_j->pos();    // p_Ij in G
+  // Eigen::Matrix<double, 3, 1> G_p_Ij = imuPose_j->pos();    // p_Ij in G
   Eigen::Matrix<double, 3, 3> G_R_Ij = Ij_R_G.transpose();  // G_R_Ij
 
   /// IMU to LIDAR extrinsic calibration
   Pose * calibration = current_state->_calib_LIDARtoIMU;
   Eigen::Matrix<double, 3, 3> I_R_L = calibration->Rot();
-  Eigen::Matrix<double, 3, 1> I_t_L = calibration->pos();
+  // Eigen::Matrix<double, 3, 1> I_t_L = calibration->pos();
   /// Predicted measurements using best estimates of states
   Eigen::Matrix<double, 3, 3> Li_R_Lj_hat = I_R_L.transpose() * Ii_R_G * G_R_Ij * I_R_L;
-  Eigen::Matrix<double, 3, 1> Li_t_Lj_hat = I_R_L.transpose() * (Ii_R_G * G_R_Ij * I_t_L + Ii_R_G * (G_p_Ij - G_p_Ii) - I_t_L);
+  // Eigen::Matrix<double, 3, 1> Li_t_Lj_hat = I_R_L.transpose() * (Ii_R_G * G_R_Ij * I_t_L + Ii_R_G * (G_p_Ij - G_p_Ii) - I_t_L);
 
   /// True measurements Li_R_Lj,  Li_t_Lj
   Eigen::Matrix<double, 3, 3> Li_R_Lj = Li_T_Lj.block(0, 0, 3, 3);
-  Eigen::Matrix<double, 3, 1> Li_t_Lj = Li_T_Lj.block(0, 3, 3, 1);
+  // Eigen::Matrix<double, 3, 1> Li_t_Lj = Li_T_Lj.block(0, 3, 3, 1);
 
   std::vector<Type *> x_order;
   int total_hx = 0;
@@ -110,25 +110,25 @@ void UpdaterLidarOdometry::updateScan2GlobalMapRotation(State * current_state, E
   /// G_T_I1
   Eigen::Matrix<double, 3, 3> G_R_I1 = G_T_I1.block(0, 0, 3, 3);
   Eigen::Matrix<double, 3, 3> I1_R_G = G_R_I1.transpose();
-  Eigen::Matrix<double, 3, 1> G_p_I1 = G_T_I1.block(0, 3, 3, 1);
+  // Eigen::Matrix<double, 3, 1> G_p_I1 = G_T_I1.block(0, 3, 3, 1);
 
   /// IMU pose at time stamp k
   Pose * imuPose_k = current_state->_clones_IMU.at(timestamp);
   Eigen::Matrix<double, 3, 3> Ik_R_G = imuPose_k->Rot();    // Ij_R_G
-  Eigen::Matrix<double, 3, 1> G_p_Ik = imuPose_k->pos();    // p_Ij in G
+  // Eigen::Matrix<double, 3, 1> G_p_Ik = imuPose_k->pos();    // p_Ij in G
   Eigen::Matrix<double, 3, 3> G_R_Ik = Ik_R_G.transpose();  // G_R_Ij
 
   /// IMU to LIDAR extrinsic calibration
   Pose * calibration = current_state->_calib_LIDARtoIMU;
   Eigen::Matrix<double, 3, 3> I_R_L = calibration->Rot();
-  Eigen::Matrix<double, 3, 1> I_t_L = calibration->pos();
+  // Eigen::Matrix<double, 3, 1> I_t_L = calibration->pos();
   /// Predicted measurements using best estimates of states
   Eigen::Matrix<double, 3, 3> L1_R_Lk_hat = I_R_L.transpose() * I1_R_G * G_R_Ik * I_R_L;
-  Eigen::Matrix<double, 3, 1> L1_t_Lk_hat = I_R_L.transpose() * (I1_R_G * G_R_Ik * I_t_L + I1_R_G * (G_p_Ik - G_p_I1) - I_t_L);
+  // Eigen::Matrix<double, 3, 1> L1_t_Lk_hat = I_R_L.transpose() * (I1_R_G * G_R_Ik * I_t_L + I1_R_G * (G_p_Ik - G_p_I1) - I_t_L);
 
   /// True measurements Li_R_Lj,  Li_t_Lj
   Eigen::Matrix<double, 3, 3> L1_R_Lk = L1_T_Lk.block(0, 0, 3, 3);
-  Eigen::Matrix<double, 3, 1> L1_t_Lk = L1_T_Lk.block(0, 3, 3, 1);
+  // Eigen::Matrix<double, 3, 1> L1_t_Lk = L1_T_Lk.block(0, 3, 3, 1);
 
   std::vector<Type *> x_order;
   int total_hx = 0;
@@ -201,7 +201,7 @@ void UpdaterLidarOdometry::updateScan2GlobalMapTranslation(State * current_state
   Eigen::Matrix<double, 3, 1> G_p_Ik = imuPose_k->pos();  // p_Ik in G
 
   /// L0_R_Lk, L0_t_Lk
-  Eigen::Matrix3d L1_R_Lk = L1_T_Lk.block(0, 0, 3, 3);
+  // Eigen::Matrix3d L1_R_Lk = L1_T_Lk.block(0, 0, 3, 3);
   Eigen::Vector3d L1_t_Lk = L1_T_Lk.block(0, 3, 3, 1);
 
   /// IMU to LIDAR extrinsic calibration

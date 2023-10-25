@@ -1,15 +1,13 @@
-//
 // Created by usl on 3/24/22.
-//
 
 #ifndef CAMERA_IMU_LIDAR_CALIBRATION_CAMERAPOSETRACKING_H
 #define CAMERA_IMU_LIDAR_CALIBRATION_CAMERAPOSETRACKING_H
 
-#include "relpose/relativePose.h"
-#include "types/Pose.h"
-#include "utils/eigen_utils.h"
-#include "utils/math_utils.h"
-#include "utils/quat_ops.h"
+#include "camera_lidar_imu_calibration/relpose/relativePose.h"
+#include "camera_lidar_imu_calibration/types/Pose.h"
+#include "camera_lidar_imu_calibration/utils/eigen_utils.h"
+#include "camera_lidar_imu_calibration/utils/math_utils.h"
+#include "camera_lidar_imu_calibration/utils/quat_ops.h"
 
 #include <Eigen/Core>
 #include <Eigen/Dense>

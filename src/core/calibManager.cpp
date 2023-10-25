@@ -1,14 +1,12 @@
-//
 // Created by usl on 12/9/20.
-//
 
-#include "calibManager.h"
+#include "camera_lidar_imu_calibration/core/calibManager.h"
 
 using namespace calib_core;
 using namespace calib_type;
 using namespace calib_estimator;
 
-calib_estimator::calibManager::calibManager(calibManagerOptions & params_)
+calib_estimator::calibManager::calibManager(const calibManagerOptions & params_)
 {
   /// Startup  message
   // Nice startup message
@@ -111,7 +109,7 @@ void calib_estimator::calibManager::projectLidarPointsOnImage()
   if (calibration_board_points != nullptr && !image_measurement.empty()) {
     std::vector<cv::Point3f> object_points_L;
     std::vector<double> object_points_intensities;
-    for (int i = 0; i < calibration_board_points->points.size(); ++i) {
+    for (std::size_t i = 0; i < calibration_board_points->points.size(); ++i) {
       cv::Point3f object_point_L = cv::Point3f(calibration_board_points->points[i].x,
         calibration_board_points->points[i].y, calibration_board_points->points[i].z);
       object_points_intensities.push_back(calibration_board_points->points[i].intensity);
@@ -154,7 +152,7 @@ void calib_estimator::calibManager::projectLidarPointsOnImage()
     cv::eigen2cv(C_t_L, tvec);
     std::vector<cv::Point2f> projected_points;
     cv::projectPoints(object_points_L, rvec, tvec, K, D, projected_points, cv::noArray());
-    for (int i = 0; i < projected_points.size(); i++) {
+    for (std::size_t i = 0; i < projected_points.size(); i++) {
       cv::circle(image_measurement, projected_points[i], 3, cv::Scalar(object_points_intensities[i], object_points_intensities[i], object_points_intensities[i]),
         cv::FILLED, cv::LINE_4);
     }
@@ -199,14 +197,14 @@ void calib_estimator::calibManager::do_undistortion(double timestamp,
   std::vector<uint32_t> point_timestamps;
   std::map<uint32_t, Eigen::Matrix<double, 13, 1> > stamped_poses;
 
-  ros::Time time_start = ros::Time::now();
+  // rclcpp::Time time_start = ros::Time::now();
   scan_out->header = scan_raw.header;
   scan_out->height = scan_raw.height;
   scan_out->width = scan_raw.width;
   scan_out->is_dense = scan_raw.is_dense;
   scan_out->resize(scan_raw.width * scan_raw.height);
-  for (int h = 0; h < scan_raw.height; h++) {
-    for (int w = 0; w < scan_raw.width; w++) {
+  for (std::uint32_t h = 0; h < scan_raw.height; h++) {
+    for (std::uint32_t w = 0; w < scan_raw.width; w++) {
       TPoint scan_point = scan_raw.at(w, h);
       uint32_t point_timestamp = scan_raw.at(w, h).t;
       Eigen::Vector3d skewedPoint = Eigen::Vector3d(scan_point.x, scan_point.y, scan_point.z);
@@ -271,8 +269,8 @@ void calib_estimator::calibManager::do_undistortion(double timestamp,
   T_ndt_predict.block(0, 0, 3, 3) = Lstart_R_Lend;
   T_ndt_predict.block(0, 3, 3, 1) = Lstart_t_Lend;
 
-  ros::Time time_end = ros::Time::now();
-  std::cout << YELLOW << "Time taken for deskewing: " << time_end.toSec() - time_start.toSec() << " [s]" << std::endl;
+  // ros::Time time_end = ros::Time::now(); // TODO
+  // std::cout << YELLOW << "Time taken for deskewing: " << time_end.toSec() - time_start.toSec() << " [s]" << std::endl;
 }
 
 TPointCloud::Ptr calib_estimator::calibManager::getCalibrationBoardPoints()
@@ -363,7 +361,7 @@ void calib_estimator::calibManager::feed_measurement_camera(double timestamp, cv
   }
   bool boarddetected = cameraTracking->feedImage(timestamp, image_in, objectpoints_c0, imagepoints);
 
-  bool did_propagate_update = do_propagate_update(timestamp, boarddetected, image_in);
+  do_propagate_update(timestamp, boarddetected, image_in);
 
   if (state->_clones_IMU.size() == 1) {
     /// G_T_I1
@@ -400,7 +398,6 @@ void calib_estimator::calibManager::feed_measurement_camera(double timestamp, cv
   logData();
 }
 
-/*
 void calib_estimator::calibManager::feed_measurement_lidar(double timestamp, TPointCloud ::Ptr cloud_raw)
 {
   if (!is_initialized_calibrator) {
@@ -458,13 +455,13 @@ void calib_estimator::calibManager::feed_measurement_lidar(double timestamp, TPo
   /// Printing for debug
   logData();
 }
-*/
 
+/*
 void calib_estimator::calibManager::feed_measurement_lidar(double timestamp, TPointCloud ::Ptr cloud_raw)
 {
-  if (!is_initialized_calibrator) {
-    is_initialized_calibrator = try_to_initialize();
-    if (!is_initialized_calibrator)
+  if (!is_initialized_linkalibr) {
+    is_initialized_linkalibr = try_to_initialize();
+    if (!is_initialized_linkalibr)
       return;
   }
 
@@ -495,15 +492,16 @@ void calib_estimator::calibManager::feed_measurement_lidar(double timestamp, TPo
   if (state->_clones_IMU.size() == 1) {
     /// G_T_I1
     Eigen::Matrix<double, 4, 1> q_GtoI1 = state->_imu->quat();
-    Eigen::Matrix3d I1_R_G = calib_core::quat_2_Rot(q_GtoI1);
+    Eigen::Matrix3d I1_R_G = lin_core::quat_2_Rot(q_GtoI1);
     Eigen::Matrix3d G_R_I1 = I1_R_G.transpose();
     Eigen::Vector3d G_t_I1 = state->_imu->pos();
     G_T_I1.block(0, 0, 3, 3) = G_R_I1;
     G_T_I1.block(0, 3, 3, 1) = G_t_I1;
   }
   /// Printing for debug
-  logData();
+  printState();
 }
+*/
 
 void calib_estimator::calibManager::do_propagate_update(double timestamp)
 {
@@ -549,7 +547,7 @@ void calib_estimator::calibManager::do_propagate_update(double timestamp)
     }
     timelastupdate = timestamp;
     if (params.limit_map_size) {
-      if (LOdom->get_odom_data().size() < params.no_of_scans_for_map)
+      if ((int)LOdom->get_odom_data().size() < params.no_of_scans_for_map)
         LOdom->append_and_update(true);
       else
         LOdom->append_and_update(false);
@@ -582,7 +580,7 @@ bool calib_estimator::calibManager::do_propagate_update(double timestamp, bool b
     if (did_update_cameraimu) {
       StateHelper::marginalize_old_clone(state);
     }
-    double residual3 = updaterCameraTracking->updatePixelBased(state, G_T_I0, imagepoints,
+    updaterCameraTracking->updatePixelBased(state, G_T_I0, imagepoints,
       objectpoints_c0, timestamp, did_update_cameraimu);
     if (did_update_cameraimu) {
       return true;
@@ -593,7 +591,7 @@ bool calib_estimator::calibManager::do_propagate_update(double timestamp, bool b
 
 void calib_estimator::calibManager::do_lidar_camera_update()
 {
-  if (state->_clones_IMU.size() >= params.state_options.max_clone_size) {
+  if ((int)state->_clones_IMU.size() >= params.state_options.max_clone_size) {
     std::cout << BOLDBLUE << "Do Lidar Camera Update" << std::endl;
     //        std::cout << BOLDCYAN << "Diff b/w Lidar Camera timestamp: " << fabs(timestamp_camera - timestamp_lidar) << std::endl;
     //        std::cout << BOLDCYAN << "nd_c: " << nd_c_vector.at(timestamp_camera).transpose() << std::endl;
@@ -626,17 +624,17 @@ void calib_estimator::calibManager::logData()
   Pose * calib_lidar2imu = state->_calib_LIDARtoIMU;
   Pose * calib_camera2imu = state->_calib_CAMERAtoIMU;
 
-  Eigen::Matrix3d I_R_G = calib_core::quat_2_Rot(state->_imu->quat());
-  Eigen::Vector3d G_euler_I = (I_R_G.transpose()).eulerAngles(0, 1, 2);
-  double roll = atan2(sin(G_euler_I.x()), cos(G_euler_I.x())) * 180 / M_PI;
-  double pitch = atan2(sin(G_euler_I.y()), cos(G_euler_I.y())) * 180 / M_PI;
-  double yaw = atan2(sin(G_euler_I.z()), cos(G_euler_I.z())) * 180 / M_PI;
+  // Eigen::Matrix3d I_R_G = calib_core::quat_2_Rot(state->_imu->quat());
+  // Eigen::Vector3d G_euler_I = (I_R_G.transpose()).eulerAngles(0, 1, 2);
+  // double roll = atan2(sin(G_euler_I.x()), cos(G_euler_I.x())) * 180 / M_PI;
+  // double pitch = atan2(sin(G_euler_I.y()), cos(G_euler_I.y())) * 180 / M_PI;
+  // double yaw = atan2(sin(G_euler_I.z()), cos(G_euler_I.z())) * 180 / M_PI;
 
   /// 1
   std::vector<Type *> statevars_pose;
   statevars_pose.push_back(state->_imu->pose());
-  Eigen::Matrix<double, 6, 6> covariance_imu_pose = StateHelper::get_marginal_covariance(state, statevars_pose);
-  trajfile_csv << ros::Time(state->_timestamp).toNSec() << ", "
+  // Eigen::Matrix<double, 6, 6> covariance_imu_pose = StateHelper::get_marginal_covariance(state, statevars_pose);
+  trajfile_csv << 1.e9 * rclcpp::Time(state->_timestamp).seconds() << ", "
                << state->_imu->quat().x() << ", " << state->_imu->quat().y() << ", "
                << state->_imu->quat().z() << ", " << state->_imu->quat().w() << ", "
                << state->_imu->pos().x() << ", " << state->_imu->pos().y() << ", "

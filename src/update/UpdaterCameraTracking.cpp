@@ -1,8 +1,6 @@
-//
 // Created by usl on 3/24/22.
-//
 
-#include "UpdaterCameraTracking.h"
+#include "camera_lidar_imu_calibration/update/UpdaterCameraTracking.h"
 
 using namespace calib_core;
 using namespace calib_estimator;
@@ -23,25 +21,25 @@ double UpdaterCameraTracking::updateImage2Image(State * current_state, relativeP
   /// IMU pose at time stamp i
   Pose * imuPose_i = current_state->_clones_IMU.at(odom_ts_i);
   Eigen::Matrix<double, 3, 3> Ii_R_G = imuPose_i->Rot();  // Ii_R_G
-  Eigen::Matrix<double, 3, 1> G_p_Ii = imuPose_i->pos();  // p_Ii in G
+  // Eigen::Matrix<double, 3, 1> G_p_Ii = imuPose_i->pos();  // p_Ii in G
 
   /// IMU pose at time stamp j
   Pose * imuPose_j = current_state->_clones_IMU.at(odom_ts_j);
   Eigen::Matrix<double, 3, 3> Ij_R_G = imuPose_j->Rot();    // Ij_R_G
-  Eigen::Matrix<double, 3, 1> G_p_Ij = imuPose_j->pos();    // p_Ij in G
+  // Eigen::Matrix<double, 3, 1> G_p_Ij = imuPose_j->pos();    // p_Ij in G
   Eigen::Matrix<double, 3, 3> G_R_Ij = Ij_R_G.transpose();  // G_R_Ij
 
   /// IMU to Camera extrinsic calibration
   Pose * calibration = current_state->_calib_CAMERAtoIMU;
   Eigen::Matrix<double, 3, 3> I_R_C = calibration->Rot();
-  Eigen::Matrix<double, 3, 1> I_p_C = calibration->pos();
+  // Eigen::Matrix<double, 3, 1> I_p_C = calibration->pos();
   /// Predicted measurements using best estimates of states
   Eigen::Matrix<double, 3, 3> Li_R_Lj_hat = I_R_C.transpose() * Ii_R_G * G_R_Ij * I_R_C;
-  Eigen::Matrix<double, 3, 1> Li_p_Lj_hat = I_R_C.transpose() * (Ii_R_G * G_R_Ij * I_p_C + Ii_R_G * (G_p_Ij - G_p_Ii) - I_p_C);
+  // Eigen::Matrix<double, 3, 1> Li_p_Lj_hat = I_R_C.transpose() * (Ii_R_G * G_R_Ij * I_p_C + Ii_R_G * (G_p_Ij - G_p_Ii) - I_p_C);
 
   /// True measurements Li_R_Lj,  Li_p_Lj
   Eigen::Matrix<double, 3, 3> Li_R_Lj = Li_T_Lj.block(0, 0, 3, 3);
-  Eigen::Matrix<double, 3, 1> Li_p_Lj = Li_T_Lj.block(0, 3, 3, 1);
+  // Eigen::Matrix<double, 3, 1> Li_p_Lj = Li_T_Lj.block(0, 3, 3, 1);
 
   std::vector<Type *> x_order;
   int total_hx = 0;
@@ -124,7 +122,7 @@ double UpdaterCameraTracking::updateImage2FirstImage(State * current_state, Eige
   Eigen::Matrix<double, 3, 1> G_p_Ik = imuPose_k->pos();  // p_Ik in G
 
   /// L0_R_Lk, L0_t_Lk
-  Eigen::Matrix3d L1_R_Lk = L1_T_Lk.block(0, 0, 3, 3);
+  // Eigen::Matrix3d L1_R_Lk = L1_T_Lk.block(0, 0, 3, 3);
   Eigen::Vector3d L1_p_Lk = L1_T_Lk.block(0, 3, 3, 1);
 
   /// IMU to LIDAR extrinsic calibration
@@ -241,20 +239,20 @@ double UpdaterCameraTracking::updatePixelBased(State * current_state, Eigen::Mat
 
   /// Jacobian with respect to Extrinsic Calibration
   Eigen::Matrix<double, 3, 3> cRb_H_Rc = R_c_hat.transpose() * (Ik_R_G_hat * I0_R_G_hat.transpose() - Eigen::Matrix3d::Identity());
-  Eigen::Matrix<double, 3, 3> cRb_H_pc = Eigen::Matrix3d::Zero();
+  // Eigen::Matrix<double, 3, 3> cRb_H_pc = Eigen::Matrix3d::Zero();
   Eigen::Matrix<double, 3, 3> cpb_H_Rc = -R_c_hat.transpose() * skew_x(Ik_R_G_hat * I0_R_G_hat.transpose() * p_c_hat + Ik_R_G_hat * (G_p_I0_hat - G_p_Ik_hat) - p_c_hat) + R_c_hat.transpose() * (Ik_R_G_hat * I0_R_G_hat.transpose() - Eigen::Matrix3d::Identity()) * skew_x(p_c_hat);
   Eigen::Matrix<double, 3, 3> cpb_H_pc = R_c_hat.transpose() * (Ik_R_G_hat * I0_R_G_hat.transpose() - Eigen::Matrix3d::Identity());
 
   /// Jacobian with respect to Ik_R_G, G_p_Ik
   Eigen::Matrix<double, 3, 3> cRb_H_IkRG = R_c_hat.transpose();
-  Eigen::Matrix<double, 3, 3> cRb_H_GpIk = Eigen::Matrix3d::Zero();
+  // Eigen::Matrix<double, 3, 3> cRb_H_GpIk = Eigen::Matrix3d::Zero();
   Eigen::Matrix<double, 3, 3> cpb_H_IkRG = R_c_hat.transpose() * skew_x(Ik_R_G_hat * (I0_R_G_hat.transpose() * p_c_hat + (G_p_I0_hat - G_p_Ik_hat)));
   Eigen::Matrix<double, 3, 3> cpb_H_GpIk = -R_c_hat.transpose() * Ik_R_G_hat;
 
   ///
   Eigen::Matrix<double, 84, 1> res;
   Eigen::MatrixXd H_x = Eigen::MatrixXd::Zero(84, total_hx);
-  for (int i = 0; i < pixel_measurements.size(); ++i) {
+  for (std::size_t i = 0; i < pixel_measurements.size(); ++i) {
     Eigen::Vector3d P_B = Eigen::Vector3d(object_points_c0[i].x, object_points_c0[i].y, object_points_c0[i].z);
     Eigen::Vector3d P_C = C_R_B_hat * P_B + C_p_B_hat;
     double X_C = P_C.x();

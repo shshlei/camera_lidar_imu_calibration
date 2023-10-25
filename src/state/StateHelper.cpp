@@ -1,8 +1,6 @@
-//
 // Created by usl on 11/8/20.
-//
 
-#include "StateHelper.h"
+#include "camera_lidar_imu_calibration/state/StateHelper.h"
 
 using namespace calib_core;
 using namespace calib_estimator;
@@ -75,14 +73,11 @@ void StateHelper::EKFPropagation(State * state,  /// Pointer to the state
 
   /// We should check if we are not positive semi-definitate (i.e. negative diagionals is not s.p.d)
   Eigen::VectorXd diags = state->_Cov.diagonal();
-  bool found_neg = false;
   for (int i = 0; i < diags.rows(); i++) {
     if (diags(i) < 0.0) {
-      printf(RED "StateHelper::EKFPropagation() - diagonal at %d is %.2f\n" RESET, i, diags(i));
-      found_neg = true;
+      printf(RED "StateHelper::EKFPropagation() - diagonal at %d is %.2f\n" RESET, i, diags(i)); // TODO
     }
   }
-  assert(!found_neg);
 }
 
 /// Performs EKF update of the state
@@ -159,14 +154,11 @@ void StateHelper::EKFUpdate(State * state,  /// Pointer to the state
 
   /// We should check if we are not positive semi-definite (i.e. negative diagonals is not s.p.d)
   Eigen::VectorXd diags = state->_Cov.diagonal();
-  bool found_neg = false;
   for (int i = 0; i < diags.rows(); i++) {
     if (diags(i) < 0.0) {
-      printf(RED "StateHelper::EKFUpdate() - diagonal at %d is %.2f\n" RESET, i, diags(i));
-      found_neg = true;
+      printf(RED "StateHelper::EKFUpdate() - diagonal at %d is %.2f\n" RESET, i, diags(i)); // TODO
     }
   }
-  assert(!found_neg);
 
   /// Calculate our delta and update all our active states
   Eigen::VectorXd dx = K * res;
@@ -228,18 +220,18 @@ void StateHelper::marginalize(State * state, Type * marg)
     std::exit(EXIT_FAILURE);
   }
 
-  ///Generic covariance has this form for x_1, x_m, x_2. If we want to remove x_m:
+  /// Generic covariance has this form for x_1, x_m, x_2. If we want to remove x_m:
   ///
-  ///  P_(x_1,x_1) P(x_1,x_m) P(x_1,x_2)
-  ///  P_(x_m,x_1) P(x_m,x_m) P(x_m,x_2)
-  ///  P_(x_2,x_1) P(x_2,x_m) P(x_2,x_2)
+  ///   P_(x_1,x_1) P(x_1,x_m) P(x_1,x_2)
+  ///   P_(x_m,x_1) P(x_m,x_m) P(x_m,x_2)
+  ///   P_(x_2,x_1) P(x_2,x_m) P(x_2,x_2)
   ///
-  ///  to
+  ///   to
   ///
-  ///  P_(x_1,x_1) P(x_1,x_2)
-  ///  P_(x_2,x_1) P(x_2,x_2)
+  ///   P_(x_1,x_1) P(x_1,x_2)
+  ///   P_(x_2,x_1) P(x_2,x_2)
   ///
-  /// i.e. x_1 goes from 0 to marg_id, x_2 goes from marg_id+marg_size to Cov.rows() in the original covariance
+  ///  i.e. x_1 goes from 0 to marg_id, x_2 goes from marg_id+marg_size to Cov.rows() in the original covariance
 
   int marg_size = marg->size();
   int marg_id = marg->id();
@@ -247,21 +239,21 @@ void StateHelper::marginalize(State * state, Type * marg)
 
   Eigen::MatrixXd Cov_new(state->_Cov.rows() - marg_size, state->_Cov.rows() - marg_size);
 
-  ///P_(x_1,x_1)
+  /// P_(x_1,x_1)
   Cov_new.block(0, 0, marg_id, marg_id) = state->_Cov.block(0, 0, marg_id, marg_id);
 
-  ///P_(x_1,x_2)
+  /// P_(x_1,x_2)
   Cov_new.block(0, marg_id, marg_id, x2_size) = state->_Cov.block(0, marg_id + marg_size, marg_id, x2_size);
 
-  ///P_(x_2,x_1)
+  /// P_(x_2,x_1)
   Cov_new.block(marg_id, 0, x2_size, marg_id) = Cov_new.block(0, marg_id, marg_id, x2_size).transpose();
 
-  ///P(x_2,x_2)
+  /// P(x_2,x_2)
   Cov_new.block(marg_id, marg_id, x2_size, x2_size) = state->_Cov.block(marg_id + marg_size, marg_id + marg_size, x2_size, x2_size);
 
   /// Now set new covariance
   state->_Cov = Cov_new;
-  ///state->Cov() = 0.5*(Cov_new+Cov_new.transpose());
+  /// state->Cov() = 0.5*(Cov_new+Cov_new.transpose());
   assert(state->_Cov.rows() == Cov_new.rows());
 
   /// Now we keep the remaining variables and update their ordering
@@ -476,7 +468,7 @@ void StateHelper::initialize_invertible(State * state,
   /// Now collect results, and add it to the state variables
   new_variable->set_local_id(oldSize);
   state->_variables.push_back(new_variable);
-  //std::cout << new_variable->id() <<  " init dx = " << (H_Linv * res).transpose() << std::endl;
+  // std::cout << new_variable->id() <<  " init dx = " << (H_Linv * res).transpose() << std::endl;
 }
 
 Type * StateHelper::clone(State * state, Type * variable_to_clone)

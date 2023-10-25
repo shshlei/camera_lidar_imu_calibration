@@ -3,6 +3,12 @@
 #ifndef CALIB_ESTIMATOR_CALIBMANAGEROPTIONS_H
 #define CALIB_ESTIMATOR_CALIBMANAGEROPTIONS_H
 
+#include "camera_lidar_imu_calibration/state/Propagator.h"
+#include "camera_lidar_imu_calibration/state/StateOptions.h"
+#include "camera_lidar_imu_calibration/update/UpdaterOptions.h"
+#include "camera_lidar_imu_calibration/utils/color.h"
+#include "camera_lidar_imu_calibration/utils/quat_ops.h"
+
 #include <Eigen/Eigen>
 
 #include <pcl/common/common.h>
@@ -10,11 +16,6 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions.h>
-#include <state/Propagator.h>
-#include <state/StateOptions.h>
-#include <update/UpdaterOptions.h>
-#include <utils/color.h>
-#include <utils/quat_ops.h>
 
 #include <iostream>
 #include <string>
@@ -154,9 +155,6 @@ struct calibManagerOptions
 
   /// Map clouddownsampling flag
   bool downSampleForMapping = false;
-
-  /// related to map generation
-  bool gen_map_data = false;
 };
 };      // namespace calib_estimator
 #endif  //CALIB_ESTIMATOR_CALIBMANAGEROPTIONS_H

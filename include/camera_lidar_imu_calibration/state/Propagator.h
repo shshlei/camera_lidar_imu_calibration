@@ -1,14 +1,12 @@
-//
 // Created by usl on 11/6/20.
-//
 
 #ifndef CALIB_PROPAGATOR_H
 #define CALIB_PROPAGATOR_H
 
-#include "State.h"
-#include "StateHelper.h"
-#include "utils/color.h"
-#include "utils/quat_ops.h"
+#include "camera_lidar_imu_calibration/state/State.h"
+#include "camera_lidar_imu_calibration/state/StateHelper.h"
+#include "camera_lidar_imu_calibration/utils/color.h"
+#include "camera_lidar_imu_calibration/utils/quat_ops.h"
 
 using namespace calib_core;
 namespace calib_estimator

@@ -1,11 +1,9 @@
-//
 // Created by usl on 11/6/20.
-//
 
 #ifndef CALIB_STATEOPTIONS_H
 #define CALIB_STATEOPTIONS_H
 
-#include <types/Type.h>
+#include "camera_lidar_imu_calibration/types/Type.h"
 
 using namespace calib_type;
 

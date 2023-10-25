@@ -5,8 +5,8 @@
 #ifndef CALIB_IMU_H
 #define CALIB_IMU_H
 
-#include "Pose.h"
-#include "utils/quat_ops.h"
+#include "camera_lidar_imu_calibration/types/Pose.h"
+#include "camera_lidar_imu_calibration/utils/quat_ops.h"
 
 namespace calib_type
 {

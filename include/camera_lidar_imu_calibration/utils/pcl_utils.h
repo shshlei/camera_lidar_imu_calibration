@@ -59,8 +59,8 @@ inline void TPointCloud2VPointCloud(TPointCloud::Ptr input_pc,
   output_pc->width = input_pc->width;
   output_pc->is_dense = input_pc->is_dense;
   output_pc->resize(output_pc->width * output_pc->height);
-  for (int h = 0; h < input_pc->height; h++) {
-    for (int w = 0; w < input_pc->width; w++) {
+  for (std::uint32_t h = 0; h < input_pc->height; h++) {
+    for (std::uint32_t w = 0; w < input_pc->width; w++) {
       if (isnan(input_pc->at(w, h).x) || isnan(input_pc->at(w, h).y) || isnan(input_pc->at(w, h).z))
         continue;
       calib_core::VPoint point;

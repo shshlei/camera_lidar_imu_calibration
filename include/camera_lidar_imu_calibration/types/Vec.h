@@ -1,11 +1,9 @@
-//
 // Created by usl on 11/5/20.
-//
 
 #ifndef CALIB_VEC_H
 #define CALIB_VEC_H
 
-#include "Type.h"
+#include "camera_lidar_imu_calibration/types/Type.h"
 
 namespace calib_type
 {

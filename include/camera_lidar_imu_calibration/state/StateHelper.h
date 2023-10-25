@@ -1,12 +1,10 @@
-//
 // Created by usl on 11/8/20.
-//
 
 #ifndef CALIB_STATEHELPER_H
 #define CALIB_STATEHELPER_H
 
-#include "State.h"
-#include "utils/color.h"
+#include "camera_lidar_imu_calibration/state/State.h"
+#include "camera_lidar_imu_calibration/utils/color.h"
 
 #include <boost/math/distributions/chi_squared.hpp>
 

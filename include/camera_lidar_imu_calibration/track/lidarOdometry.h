@@ -1,12 +1,12 @@
 #ifndef CALIB_LIDARODOMETRY_H
 #define CALIB_LIDARODOMETRY_H
 
-#include "relpose/relativePose.h"
-#include "types/Pose.h"
-#include "utils/eigen_utils.h"
-#include "utils/math_utils.h"
-#include "utils/pcl_utils.h"
-#include "utils/quat_ops.h"
+#include "camera_lidar_imu_calibration/relpose/relativePose.h"
+#include "camera_lidar_imu_calibration/types/Pose.h"
+#include "camera_lidar_imu_calibration/utils/eigen_utils.h"
+#include "camera_lidar_imu_calibration/utils/math_utils.h"
+#include "camera_lidar_imu_calibration/utils/pcl_utils.h"
+#include "camera_lidar_imu_calibration/utils/quat_ops.h"
 
 #include <pclomp/ndt_omp.h>
 
@@ -45,8 +45,7 @@ public:
 
   void saveTargetMap(const std::string & path) const
   {
-    ROS_INFO_STREAM("Save NDT target map to " << path
-                                              << "; size: " << map_cloud_->size());
+    // ROS_INFO_STREAM("Save NDT target map to " << path << "; size: " << map_cloud_->size()); // TODO
     pcl::io::savePCDFileASCII(path, *map_cloud_);
   }
 

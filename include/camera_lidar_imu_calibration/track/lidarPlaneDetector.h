@@ -7,10 +7,10 @@
 
 #define PCL_NO_PRECOMPILE  // !! BEFORE ANY PCL INCLUDE!!
 
-#include "utils/eigen_utils.h"
-#include "utils/math_utils.h"
-#include "utils/pcl_utils.h"
-#include "utils/quat_ops.h"
+#include "camera_lidar_imu_calibration/utils/eigen_utils.h"
+#include "camera_lidar_imu_calibration/utils/math_utils.h"
+#include "camera_lidar_imu_calibration/utils/pcl_utils.h"
+#include "camera_lidar_imu_calibration/utils/quat_ops.h"
 
 #include <pcl/ModelCoefficients.h>
 #include <pcl/common/eigen.h>

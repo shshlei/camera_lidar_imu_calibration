@@ -1,22 +1,20 @@
-//
 // Created by usl on 12/8/20.
-//
 
 #ifndef CALIB_ESTIMATOR_CALIBMANAGER_H
 #define CALIB_ESTIMATOR_CALIBMANAGER_H
 
-#include "calibManagerOptions.h"
-#include "init/InertialInitializer.h"
-#include "state/Propagator.h"
-#include "state/State.h"
-#include "state/StateHelper.h"
-#include "track/cameraPoseTracking.h"
-#include "track/lidarOdometry.h"
-#include "track/lidarPlaneDetector.h"
-#include "update/UpdaterCameraLidarConstraint.h"
-#include "update/UpdaterCameraTracking.h"
-#include "update/UpdaterLidarOdometry.h"
-#include "utils/pcl_utils.h"
+#include "camera_lidar_imu_calibration/core/calibManagerOptions.h"
+#include "camera_lidar_imu_calibration/init/InertialInitializer.h"
+#include "camera_lidar_imu_calibration/state/Propagator.h"
+#include "camera_lidar_imu_calibration/state/State.h"
+#include "camera_lidar_imu_calibration/state/StateHelper.h"
+#include "camera_lidar_imu_calibration/track/cameraPoseTracking.h"
+#include "camera_lidar_imu_calibration/track/lidarOdometry.h"
+#include "camera_lidar_imu_calibration/track/lidarPlaneDetector.h"
+#include "camera_lidar_imu_calibration/update/UpdaterCameraLidarConstraint.h"
+#include "camera_lidar_imu_calibration/update/UpdaterCameraTracking.h"
+#include "camera_lidar_imu_calibration/update/UpdaterLidarOdometry.h"
+#include "camera_lidar_imu_calibration/utils/pcl_utils.h"
 
 #include <Eigen/StdVector>
 
@@ -33,7 +31,7 @@ class calibManager
 {
 public:
   /// Constructor that will load all configuration variables
-  calibManager(calibManagerOptions & param_);
+  calibManager(const calibManagerOptions & param_);
 
   /// Feed function for inertial data
   void feed_measurement_imu(double timestamp_imu, Eigen::Vector3d wm, Eigen::Vector3d am);
